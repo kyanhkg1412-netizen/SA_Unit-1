@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#1a8f9c" />
+<title>Unit 1: Hello! — Interactive Pre-A1 Lesson</title>
+<style>
+  :root{
+    --ink:#16324f; --muted:#5c7085; --paper:#fffdf8; --panel:#ffffff;
+    --teal:#138b96; --teal2:#0f6f7a; --yellow:#ffd84d; --orange:#ff9f43;
+    --coral:#ff6b6b; --green:#3fbd7f; --blue:#4d8dff; --purple:#8c67d7;
+    --shadow:0 14px 32px rgba(21,50,79,.13); --radius:24px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:ui-rounded,"Arial Rounded MT Bold",Nunito,system-ui,-apple-system,Segoe UI,sans-serif;background:
+    radial-gradient(circle at 7% 4%,rgba(255,216,77,.38),transparent 25%),
+    radial-gradient(circle at 93% 8%,rgba(77,141,255,.20),transparent 23%),
+    linear-gradient(180deg,#e9fbfb 0%,#f8fbff 55%,#fff8e9 100%);color:var(--ink);min-height:100vh}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  .hidden{display:none!important}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* Top bar */
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:10px 18px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(22,50,79,.1)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:1000;letter-spacing:.2px}
+  .brand-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,var(--teal),#36c0bc);color:white;box-shadow:0 8px 18px rgba(19,139,150,.28)}
+  .top-spacer{flex:1}
+  .pill{display:flex;align-items:center;gap:7px;background:#f4f8fb;border:1px solid #dbe7ef;border-radius:999px;padding:8px 12px;font-weight:900;white-space:nowrap}
+  .icon-btn{border:none;width:42px;height:42px;border-radius:14px;background:#f2f7fa;display:grid;place-items:center;font-size:1.15rem;color:var(--ink)}
+  .icon-btn:hover{background:#e5f2f5}
+
+  main{width:min(1180px,calc(100% - 28px));margin:18px auto 90px}
+  .card{background:rgba(255,255,255,.95);border:1px solid rgba(22,50,79,.09);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+  /* Name gate */
+  #gate{min-height:calc(100vh - 36px);display:grid;place-items:center;padding:22px}
+  .gate-card{width:min(920px,100%);overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr}
+  .gate-copy{padding:clamp(26px,5vw,54px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#fff4c9;color:#725800;font-weight:1000;font-size:.9rem}
+  h1{font-size:clamp(2.4rem,6vw,5.4rem);line-height:.95;margin:18px 0 14px;letter-spacing:-3px}
+  .lead{font-size:clamp(1rem,2vw,1.25rem);line-height:1.6;color:var(--muted);margin:0 0 24px}
+  .name-label{font-weight:1000;display:block;margin:0 0 8px}
+  .name-row{display:flex;gap:10px}
+  .name-input{flex:1;min-width:0;border:3px solid #d8e6ed;border-radius:16px;padding:15px 16px;font-size:1.05rem;outline:none;transition:.2s;background:white}
+  .name-input:focus{border-color:var(--teal);box-shadow:0 0 0 5px rgba(19,139,150,.12)}
+  .primary{border:none;border-radius:16px;padding:14px 20px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:white;font-weight:1000;box-shadow:0 8px 18px rgba(19,139,150,.25)}
+  .primary:hover{transform:translateY(-1px)}
+  .primary:active{transform:translateY(1px)}
+  .error{min-height:22px;color:#b42318;font-weight:900;margin:8px 0 0}
+  .gate-art{position:relative;min-height:510px;background:linear-gradient(155deg,#0c7480,#34bbb7);overflow:hidden;display:grid;place-items:center}
+  .gate-art:before,.gate-art:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.15)}
+  .gate-art:before{width:280px;height:280px;right:-90px;top:-70px}.gate-art:after{width:180px;height:180px;left:-40px;bottom:-50px}
+  .character{position:relative;width:min(330px,80%);aspect-ratio:1/1.18;filter:drop-shadow(0 18px 20px rgba(0,0,0,.17));animation:float 3.5s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-9px)}}
+  .speech{position:absolute;right:8%;top:8%;background:white;border-radius:22px;padding:13px 17px;font-weight:1000;box-shadow:var(--shadow);transform:rotate(4deg)}
+  .speech:after{content:"";position:absolute;left:20px;bottom:-10px;border:10px solid transparent;border-top-color:white;border-bottom:0}
+
+  /* Dashboard */
+  .hero{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;margin-bottom:18px}
+  .hero-main{padding:30px;position:relative;overflow:hidden;background:linear-gradient(135deg,#087985,#1aa6a5);color:white}
+  .hero-main:after{content:"ABC";position:absolute;right:-10px;bottom:-25px;font-size:8rem;font-weight:1000;opacity:.09;letter-spacing:-12px;transform:rotate(-7deg)}
+  .hero-main h2{font-size:clamp(2rem,5vw,4rem);margin:5px 0 10px;line-height:1;letter-spacing:-2px}
+  .hero-main p{max-width:650px;font-size:1.08rem;line-height:1.55;margin:0;color:#eaffff}
+  .welcome{font-weight:1000;color:#ffef9c}
+  .hero-side{padding:22px;display:flex;flex-direction:column;justify-content:center}
+  .progress-label{display:flex;justify-content:space-between;font-weight:1000;margin-bottom:10px}
+  .progress-track{height:17px;background:#e7eef3;border-radius:999px;overflow:hidden;border:2px solid white;box-shadow:inset 0 1px 3px rgba(0,0,0,.1)}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--yellow),var(--orange));border-radius:999px;transition:width .5s ease}
+  .mini-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+  .mini-stat{background:#f5fafb;border-radius:18px;padding:14px;text-align:center;border:1px solid #e1ecef}
+  .mini-stat strong{display:block;font-size:1.6rem}
+  .mini-stat span{font-size:.86rem;color:var(--muted);font-weight:900}
+
+  .section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:26px 2px 14px}
+  .section-title h3{font-size:1.55rem;margin:0}.section-title p{margin:0;color:var(--muted);font-weight:800}
+  .lesson-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .lesson-card{position:relative;border:none;text-align:left;padding:20px;min-height:188px;border-radius:22px;color:var(--ink);box-shadow:var(--shadow);overflow:hidden;transition:.18s;border:2px solid rgba(255,255,255,.8)}
+  .lesson-card:hover{transform:translateY(-4px)}
+  .lesson-card .num{position:absolute;right:12px;top:8px;font-size:3.2rem;font-weight:1000;opacity:.13}
+  .lesson-card .lesson-icon{font-size:2.7rem;display:block;margin-bottom:12px}
+  .lesson-card h4{font-size:1.18rem;margin:0 0 7px}.lesson-card p{margin:0;font-size:.9rem;line-height:1.4;color:#36556d;font-weight:750}
+  .lesson-card .status{position:absolute;right:13px;bottom:12px;background:rgba(255,255,255,.75);border-radius:999px;padding:6px 9px;font-size:.78rem;font-weight:1000}
+  .c1{background:#d9f8f5}.c2{background:#fff0c7}.c3{background:#dfeaff}.c4{background:#f0e5ff}.c5{background:#ffe2e2}.c6{background:#e4f8df}.c7{background:#ffebd9}.c8{background:#e1f2ff}
+
+  /* Lesson screen */
+  .lesson-shell{display:grid;grid-template-columns:255px 1fr;gap:16px}
+  .side-nav{padding:16px;align-self:start;position:sticky;top:76px}
+  .back-btn{width:100%;border:none;border-radius:14px;padding:12px;background:#edf5f7;color:var(--teal2);font-weight:1000;text-align:left}
+  .side-nav h3{font-size:1.12rem;margin:16px 4px 8px}
+  .side-nav p{font-size:.9rem;line-height:1.45;color:var(--muted);margin:0 4px 14px}
+  .lesson-stat{display:flex;justify-content:space-between;margin:7px 4px;font-size:.9rem;font-weight:900}
+  .lesson-content{padding:clamp(18px,3vw,32px);min-height:680px}
+  .lesson-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;border-bottom:2px dashed #dce8ee;padding-bottom:18px}
+  .lesson-head .big-icon{width:68px;height:68px;border-radius:20px;display:grid;place-items:center;font-size:2.25rem;background:#eef9fa}
+  .lesson-head h2{font-size:clamp(1.7rem,4vw,2.7rem);margin:0 0 3px}.lesson-head p{margin:0;color:var(--muted);font-weight:800}
+  .activity-instruction{background:#eef9fa;border:2px solid #ccebed;border-radius:17px;padding:12px 15px;font-weight:900;margin-bottom:16px;line-height:1.45}
+  .activity-instruction b{color:var(--teal2)}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .secondary{border:2px solid #cfe1e7;border-radius:15px;padding:12px 17px;background:white;color:var(--ink);font-weight:1000}
+  .secondary:hover{background:#f3f9fa}
+  .success-btn{background:linear-gradient(135deg,var(--green),#2b9964)}
+  .danger-btn{background:linear-gradient(135deg,var(--coral),#d94b4b)}
+
+  /* Vocabulary */
+  .flash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .flash{border:3px solid #e2edf1;border-radius:22px;background:#fff;padding:14px;min-height:190px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;transition:.2s;position:relative}
+  .flash:hover{border-color:#8fd8da;transform:translateY(-3px)}
+  .flash .pic{font-size:4rem}.flash .word{font-size:1.25rem;font-weight:1000}.flash .tap{font-size:.76rem;color:var(--muted);font-weight:900}
+  .listen-mini{position:absolute;right:9px;top:9px;border:none;width:34px;height:34px;border-radius:11px;background:#e9f6f8}
+
+  /* choices */
+  .prompt-card{text-align:center;padding:22px;border-radius:22px;background:linear-gradient(135deg,#f7fbff,#effbfd);border:2px solid #d8edf0;margin-bottom:16px}
+  .prompt-card .prompt-emoji{font-size:4.3rem}.prompt-card h3{font-size:1.5rem;margin:8px 0}.prompt-card p{margin:0;color:var(--muted);font-weight:800}
+  .choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .choice{border:3px solid #e2ebef;border-radius:20px;background:white;padding:18px 10px;min-height:122px;font-weight:1000;font-size:1.05rem;color:var(--ink);transition:.15s}
+  .choice:hover{border-color:#83cfd3;transform:translateY(-2px)}
+  .choice.correct{border-color:var(--green);background:#e9fbf2}.choice.wrong{border-color:var(--coral);background:#fff0f0;animation:shake .28s}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* Dialogues */
+  .dialogue{background:#f8fbfd;border-radius:22px;padding:22px;border:2px solid #e2edf1}
+  .bubble-row{display:flex;align-items:flex-end;gap:10px;margin:13px 0}.bubble-row.right{justify-content:flex-end}
+  .avatar{width:54px;height:54px;border-radius:18px;background:#ffe6b8;display:grid;place-items:center;font-size:2rem;flex:none}
+  .bubble{max-width:70%;padding:13px 16px;border-radius:19px 19px 19px 5px;background:white;border:2px solid #dce9ee;font-weight:1000;line-height:1.4}
+  .right .bubble{border-radius:19px 19px 5px 19px;background:#dff7f6;border-color:#b5e5e4}
+  .answer-stack{display:grid;gap:10px;margin-top:16px}
+  .answer-btn{border:2px solid #dce7ec;border-radius:16px;padding:13px;background:white;text-align:left;font-weight:1000;color:var(--ink)}
+  .answer-btn:hover{border-color:var(--teal)}
+  .student-line{display:flex;gap:8px;margin-top:14px}.student-line input{flex:1;border:2px solid #cfe0e6;border-radius:14px;padding:12px}
+
+  /* Wheel */
+  .wheel-area{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:24px}
+  .wheel-wrap{display:grid;place-items:center;position:relative;min-height:380px}
+  .pointer{position:absolute;top:5px;z-index:3;font-size:2.2rem;color:var(--coral);filter:drop-shadow(0 4px 2px rgba(0,0,0,.15))}
+  .wheel{width:min(340px,75vw);aspect-ratio:1;border-radius:50%;border:10px solid white;box-shadow:0 15px 32px rgba(22,50,79,.2);position:relative;overflow:hidden;background:conic-gradient(#36c0bc 0 60deg,#ffd84d 60deg 120deg,#ff9f43 120deg 180deg,#8c67d7 180deg 240deg,#4d8dff 240deg 300deg,#ff7d7d 300deg 360deg);transition:transform 2.5s cubic-bezier(.17,.67,.16,1)}
+  .wheel-label{position:absolute;left:50%;top:50%;font-size:.78rem;font-weight:1000;color:#17334a;text-shadow:0 1px 0 white;transform-origin:0 0;width:45%;text-align:right}
+  .wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;background:white;display:grid;place-items:center;font-size:2rem;border:6px solid #eef4f7;z-index:2}
+  .spin-panel{text-align:center}.spin-panel .action-show{font-size:4rem;margin:12px}.spin-panel h3{font-size:1.65rem;margin:4px}.spin-panel p{color:var(--muted);font-weight:800}
+
+  /* Phonics */
+  .letter-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:18px}.letter-tab{border:none;border-radius:17px;padding:13px 20px;background:#eef4f7;font-size:1.3rem;font-weight:1000}.letter-tab.active{background:var(--teal);color:white}
+  .letter-stage{text-align:center;border:3px dashed #c8dfe5;border-radius:24px;padding:22px;background:#fbfeff}.giant-letter{font-size:7rem;font-weight:1000;line-height:1;color:var(--teal2)}
+  .phonics-pic{font-size:5rem}.trace-box{margin:18px auto 0;width:min(560px,100%);height:150px;background:repeating-linear-gradient(to bottom,transparent 0 35px,#b9d5dd 36px 38px);border-radius:18px;position:relative;overflow:hidden;border:2px solid #dce8ec;touch-action:none}
+  .trace-letter{position:absolute;inset:0;display:grid;place-items:center;font-size:7rem;font-weight:1000;color:transparent;-webkit-text-stroke:3px #a5bdc5;opacity:.8;user-select:none;pointer-events:none}
+  canvas#traceCanvas{position:absolute;inset:0;width:100%;height:100%}
+  .sort-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.sort-item{border:3px solid #dfe9ed;border-radius:18px;padding:14px;background:white;text-align:center}.sort-item .emoji{font-size:3rem}.sort-item select{width:100%;margin-top:8px;border:2px solid #cddfe5;border-radius:12px;padding:9px;background:white;font-weight:1000}
+
+  /* Story */
+  .story-scene{border-radius:23px;background:linear-gradient(180deg,#dff6ff 0 65%,#bde5a7 65%);padding:22px;min-height:260px;position:relative;overflow:hidden}
+  .story-people{display:flex;justify-content:center;align-items:end;gap:60px;padding-top:40px}.story-person{text-align:center}.story-person .person{font-size:6rem}.story-person b{display:block;background:white;border-radius:999px;padding:5px 10px}
+  .story-sun{position:absolute;right:22px;top:18px;font-size:3rem}.story-cloud{position:absolute;left:25px;top:20px;font-size:3rem}
+  .feeling-row{display:flex;justify-content:center;gap:12px;margin:18px 0}.feeling{border:3px solid #e0e9ed;background:white;border-radius:18px;padding:10px 16px;font-size:2rem}.feeling.selected{border-color:var(--green);background:#e8fbf1}
+
+  /* Quiz / report */
+  .quiz-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.quiz-counter{font-weight:1000}.quiz-bar{height:12px;flex:1;background:#e8eff2;border-radius:999px;overflow:hidden}.quiz-bar>div{height:100%;background:linear-gradient(90deg,var(--teal),#50c8bf);transition:.3s}
+  .quiz-question{font-size:1.45rem;text-align:center;margin:18px 0 8px}.quiz-image{text-align:center;font-size:4.5rem;min-height:80px}
+  .result-card{text-align:center;padding:12px}.result-badge{width:135px;height:135px;border-radius:50%;display:grid;place-items:center;margin:4px auto 14px;background:linear-gradient(135deg,var(--yellow),var(--orange));font-size:3.6rem;box-shadow:0 14px 25px rgba(255,159,67,.25)}
+  .result-card h2{font-size:2.2rem;margin:0 0 8px}.score-big{font-size:1.6rem;font-weight:1000;color:var(--teal2)}
+  .report{margin:18px auto;text-align:left;max-width:700px;background:#f7fafc;border:2px solid #e1eaee;border-radius:18px;padding:16px;line-height:1.6}
+  .report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 20px}.report-grid b{color:var(--teal2)}
+  .email-note{max-width:760px;margin:12px auto;background:#fff8d8;border:2px solid #f1d56b;border-radius:16px;padding:12px 14px;text-align:left;font-size:.92rem;line-height:1.45}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:#17354b;color:white;padding:12px 18px;border-radius:999px;font-weight:1000;z-index:100;box-shadow:var(--shadow);transition:.25s;max-width:90%;text-align:center}.toast.show{transform:translate(-50%,0)}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden}.confetti i{position:absolute;top:-20px;width:12px;height:18px;border-radius:3px;animation:fall 2.6s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  footer{text-align:center;color:var(--muted);font-weight:800;font-size:.85rem;margin-top:30px}
+
+  @media(max-width:900px){
+    .gate-card,.hero,.lesson-shell,.wheel-area{grid-template-columns:1fr}.gate-art{min-height:360px}.lesson-grid{grid-template-columns:repeat(2,1fr)}
+    .side-nav{position:static}.flash-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:560px){
+    .topbar{padding:8px 10px}.brand span:last-child{display:none}.pill{padding:7px 9px}.top-name{display:none}
+    main{width:min(100% - 16px,1180px)}.name-row{flex-direction:column}.lesson-grid,.flash-grid,.choice-grid,.sort-grid{grid-template-columns:1fr}
+    .gate-copy{padding:28px 22px}.gate-art{min-height:300px}.hero-main,.hero-side,.lesson-content{padding:20px}
+    .story-people{gap:15px}.story-person .person{font-size:4.2rem}.report-grid{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<div id="gate">
+  <section class="gate-card card" aria-labelledby="gateTitle">
+    <div class="gate-copy">
+      <span class="eyebrow">⭐ LOOK Starter • Unit 1</span>
+      <h1 id="gateTitle">Hello!</h1>
+      <p class="lead">Learn classroom words, friendly greetings, names, and the letters <b>A, B, C</b>. Listen, speak, play, and collect stars!</p>
+      <label class="name-label" for="fullName">Write your full name</label>
+      <div class="name-row">
+        <input id="fullName" class="name-input" type="text" maxlength="60" autocomplete="name" placeholder="Example: Nguyen Minh Anh" aria-describedby="nameError" />
+        <button id="startBtn" class="primary">Start lesson ▶</button>
+      </div>
+      <p id="nameError" class="error" role="alert"></p>
+      <p style="font-size:.82rem;color:var(--muted);font-weight:800;line-height:1.45">Your name and progress are stored only in this browser. At the end, an email-ready report can be opened for your teacher.</p>
+    </div>
+    <div class="gate-art" aria-hidden="true">
+      <div class="speech">Hello! 👋</div>
+      <svg class="character" viewBox="0 0 300 350" role="img" aria-label="A friendly cartoon learner waving">
+        <ellipse cx="150" cy="321" rx="105" ry="20" fill="rgba(0,0,0,.14)"/>
+        <path d="M86 143c8-45 37-72 67-72s60 25 67 72c-11-8-22-13-32-15-24-6-47-2-68 10-10 6-20 8-34 5z" fill="#27354d"/>
+        <circle cx="151" cy="145" r="58" fill="#9a5d3a"/>
+        <path d="M95 138c7-50 28-70 58-70 36 0 59 25 61 69-28-12-54-18-78-16-16 1-30 7-41 17z" fill="#222d42"/>
+        <circle cx="129" cy="147" r="5" fill="#192b3a"/><circle cx="177" cy="147" r="5" fill="#192b3a"/>
+        <path d="M131 172q21 18 43 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+        <path d="M105 207q46-32 91 0l25 117H79z" fill="#ffd84d"/>
+        <path d="M95 215L51 178q-8-7-1-17t18-2l44 31" fill="#9a5d3a"/>
+        <path d="M49 169l-12-31M55 164l2-34M61 167l16-29" fill="none" stroke="#9a5d3a" stroke-width="10" stroke-linecap="round"/>
+        <path d="M189 212l45 72" stroke="#9a5d3a" stroke-width="25" stroke-linecap="round"/>
+        <path d="M104 321v20M194 321v20" stroke="#263b58" stroke-width="26" stroke-linecap="round"/>
+        <path d="M91 346h34M180 346h34" stroke="#fff" stroke-width="13" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </section>
+</div>
+
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">👋</span><span>Unit 1: Hello!</span></div>
+    <div class="top-spacer"></div>
+    <div class="pill top-name">👤 <span id="topName">Learner</span></div>
+    <div class="pill">⭐ <span id="starCount">0</span></div>
+    <button id="soundToggle" class="icon-btn" title="Sound on/off" aria-label="Turn sound off">🔊</button>
+  </header>
+
+  <main>
+    <section id="dashboardView">
+      <div class="hero">
+        <article class="hero-main card">
+          <div class="welcome" id="welcomeText">Hello!</div>
+          <h2>Ready to learn?</h2>
+          <p>Complete the eight playful activities. Listen carefully, say the words aloud, and be friendly!</p>
+        </article>
+        <aside class="hero-side card">
+          <div class="progress-label"><span>Lesson progress</span><span id="progressText">0%</span></div>
+          <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+          <div class="mini-stats">
+            <div class="mini-stat"><strong id="doneCount">0/8</strong><span>Activities</span></div>
+            <div class="mini-stat"><strong id="bestScore">—</strong><span>Final quiz</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="section-title"><div><h3>Learning dashboard</h3><p>Choose any activity to begin.</p></div></div>
+      <div id="lessonGrid" class="lesson-grid"></div>
+      <footer>Original classroom practice inspired by the learning objectives in Unit 1. No external files or internet connection are required.</footer>
+    </section>
+
+    <section id="lessonView" class="hidden">
+      <div class="lesson-shell">
+        <aside class="side-nav card">
+          <button id="backBtn" class="back-btn">← Back to dashboard</button>
+          <h3 id="sideTitle">Activity</h3>
+          <p id="sideDesc">Complete the task and collect stars.</p>
+          <div class="lesson-stat"><span>Stars</span><span id="sideStars">0 ⭐</span></div>
+          <div class="lesson-stat"><span>Activity</span><span id="sideStep">1/8</span></div>
+        </aside>
+        <article id="lessonContent" class="lesson-content card" aria-live="polite"></article>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="confetti" class="confetti" aria-hidden="true"></div>
+
+<script>
+(() => {
+  'use strict';
+  const TEACHER_EMAIL = 'kyanhkg1412@gmail.com';
+  const STORE_KEY = 'unit1_hello_preA1_v2';
+  const vocab = [
+    {word:'Hello', icon:'👋', voice:'Hello'},
+    {word:'Goodbye', icon:'🚪', voice:'Goodbye'},
+    {word:'Sing', icon:'🎤', voice:'Sing'},
+    {word:'Sit down', icon:'🪑', voice:'Sit down'},
+    {word:'Stand up', icon:'🙋', voice:'Stand up'},
+    {word:'Thank you', icon:'🙏', voice:'Thank you'}
+  ];
+  const lessons = [
+    {id:'words',num:1,icon:'🗣️',title:'Words',desc:'Listen and learn six classroom words.',class:'c1'},
+    {id:'listen',num:2,icon:'👂',title:'Listen & Choose',desc:'Hear a phrase and tap the right answer.',class:'c2'},
+    {id:'feelings',num:3,icon:'😊',title:'How are you?',desc:'Practice a friendly greeting and reply.',class:'c3'},
+    {id:'names',num:4,icon:'🏷️',title:"What's your name?",desc:'Build and say a simple name dialogue.',class:'c4'},
+    {id:'wheel',num:5,icon:'🎡',title:'Action Wheel',desc:'Spin, listen, and do the action.',class:'c5'},
+    {id:'phonics',num:6,icon:'🔤',title:'Phonics A–C',desc:'Learn A apple, B bag, and C cake.',class:'c6'},
+    {id:'friendly',num:7,icon:'🤝',title:'Be Friendly',desc:'Choose kind words in a mini story.',class:'c7'},
+    {id:'quiz',num:8,icon:'🏆',title:'Final Quiz',desc:'Show what you know and make a report.',class:'c8'}
+  ];
+
+  let state = {name:'',stars:0,completed:{},best:null,attempts:0,lastScore:null,lastFinished:null};
+  let soundOn = true;
+  let currentLesson = null;
+  let audioCtx = null;
+  let listenRound = 0, listenScore = 0, listenTarget = null;
+  let wheelRotation = 0;
+  let quizIndex = 0, quizScore = 0, quizAnswers = [];
+  let traceCtx = null, tracing = false;
+
+  const $ = s => document.querySelector(s);
+  const gate = $('#gate'), app = $('#app'), dashboardView = $('#dashboardView'), lessonView = $('#lessonView'), lessonContent = $('#lessonContent');
+
+  function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  function load(){
+    try { const data = JSON.parse(localStorage.getItem(STORE_KEY)); if(data && typeof data==='object') state = {...state,...data}; }
+    catch(e){}
+  }
+  function safeText(s){ return String(s).replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c])); }
+  function firstName(){ return state.name.trim().split(/\s+/).slice(-1)[0] || 'friend'; }
+
+  function tone(type='click'){
+    if(!soundOn) return;
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime, osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      const cfg = type==='good' ? [660,880,.18] : type==='bad' ? [220,150,.22] : type==='finish' ? [523,1046,.42] : [420,520,.08];
+      osc.type = type==='bad' ? 'sawtooth' : 'sine';
+      osc.frequency.setValueAtTime(cfg[0],now); osc.frequency.exponentialRampToValueAtTime(cfg[1],now+cfg[2]);
+      gain.gain.setValueAtTime(.0001,now); gain.gain.exponentialRampToValueAtTime(.16,now+.02); gain.gain.exponentialRampToValueAtTime(.0001,now+cfg[2]);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now+cfg[2]+.02);
+    }catch(e){}
+  }
+  function speak(text, rate=.86){
+    if(!soundOn || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=rate; u.pitch=1.08; u.volume=1;
+    const voices = speechSynthesis.getVoices();
+    const preferred = voices.find(v=>/en-US/i.test(v.lang) && /Samantha|Google US English|Microsoft Zira|Ava/i.test(v.name)) || voices.find(v=>/en/i.test(v.lang));
+    if(preferred) u.voice = preferred;
+    speechSynthesis.speak(u);
+  }
+  function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),2200); }
+  function celebrate(){
+    const wrap=$('#confetti'); wrap.innerHTML=''; const colors=['#ffd84d','#ff6b6b','#3fbd7f','#4d8dff','#8c67d7','#ff9f43'];
+    for(let i=0;i<48;i++){const p=document.createElement('i');p.style.left=Math.random()*100+'vw';p.style.background=colors[i%colors.length];p.style.animationDelay=Math.random()*.6+'s';p.style.transform=`rotate(${Math.random()*180}deg)`;wrap.appendChild(p)}
+    setTimeout(()=>wrap.innerHTML='',3300);
+  }
+  function addStars(n){ state.stars += n; save(); updateHeader(); }
+  function complete(id, stars=1){
+    if(!state.completed[id]){ state.completed[id]=true; addStars(stars); toast(`Great work! +${stars} star${stars>1?'s':''} ⭐`); }
+    else save();
+    updateDashboard();
+  }
+
+  function updateHeader(){ $('#starCount').textContent=state.stars; $('#sideStars').textContent=state.stars+' ⭐'; }
+  function updateDashboard(){
+    const done=lessons.filter(l=>state.completed[l.id]).length, pct=Math.round(done/lessons.length*100);
+    $('#progressText').textContent=pct+'%'; $('#progressFill').style.width=pct+'%'; $('#doneCount').textContent=done+'/8'; $('#bestScore').textContent=state.best==null?'—':state.best+'/10';
+    $('#lessonGrid').innerHTML=lessons.map(l=>`<button class="lesson-card ${l.class}" data-lesson="${l.id}" aria-label="Open ${safeText(l.title)}">
+      <span class="num">${l.num}</span><span class="lesson-icon">${l.icon}</span><h4>${safeText(l.title)}</h4><p>${safeText(l.desc)}</p>
+      <span class="status">${state.completed[l.id]?'✓ Done':'Start →'}</span></button>`).join('');
+    document.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.lesson)));
+  }
+  function showDashboard(){ currentLesson=null; lessonView.classList.add('hidden'); dashboardView.classList.remove('hidden'); updateDashboard(); window.scrollTo({top:0,behavior:'smooth'}); }
+  function openLesson(id){
+    currentLesson=lessons.find(l=>l.id===id); if(!currentLesson) return;
+    dashboardView.classList.add('hidden'); lessonView.classList.remove('hidden');
+    $('#sideTitle').textContent=currentLesson.title; $('#sideDesc').textContent=currentLesson.desc; $('#sideStep').textContent=currentLesson.num+'/8'; updateHeader();
+    renderLesson(id); window.scrollTo({top:0,behavior:'smooth'}); tone();
+  }
+  function head(icon,title,sub){ return `<div class="lesson-head"><div class="big-icon">${icon}</div><div><h2>${title}</h2><p>${sub}</p></div></div>`; }
+
+  function renderLesson(id){
+    if(id==='words') renderWords();
+    else if(id==='listen') startListen();
+    else if(id==='feelings') renderFeelings();
+    else if(id==='names') renderNames();
+    else if(id==='wheel') renderWheel();
+    else if(id==='phonics') renderPhonics('A');
+    else if(id==='friendly') renderFriendly();
+    else if(id==='quiz') startQuiz();
+  }
+
+  function renderWords(){
+    lessonContent.innerHTML=head('🗣️','Words','Listen, point, and repeat.')+
+      `<div class="activity-instruction"><b>Tap each card.</b> Listen and say the word aloud.</div>
+      <div class="flash-grid">${vocab.map((v,i)=>`<button class="flash" data-word="${i}"><span class="listen-mini" aria-hidden="true">🔊</span><span class="pic">${v.icon}</span><span class="word">${v.word}</span><span class="tap">Tap to listen</span></button>`).join('')}</div>
+      <div class="controls"><button id="wordsDone" class="primary success-btn">I practised all words ✓</button><button id="sayAll" class="secondary">🔊 Listen to all</button></div>`;
+    document.querySelectorAll('[data-word]').forEach(b=>b.addEventListener('click',()=>{ const v=vocab[+b.dataset.word]; tone(); speak(v.voice); b.style.borderColor='#3fbd7f'; }));
+    $('#sayAll').onclick=()=>speak(vocab.map(v=>v.voice).join('. '),.78);
+    $('#wordsDone').onclick=()=>{complete('words',1); tone('good'); celebrate();};
+  }
+
+  function startListen(){ listenRound=0; listenScore=0; nextListen(); }
+  function nextListen(){
+    if(listenRound>=6){
+      lessonContent.innerHTML=head('👂','Listen & Choose','Activity complete!')+`<div class="result-card"><div class="result-badge">👂</div><h2>${listenScore}/6 correct</h2><p class="score-big">${listenScore>=5?'Excellent listening!':'Good practice!'}</p><div class="controls" style="justify-content:center"><button id="listenAgain" class="secondary">Try again</button><button id="listenFinish" class="primary success-btn">Finish activity ✓</button></div></div>`;
+      $('#listenAgain').onclick=startListen; $('#listenFinish').onclick=()=>{complete('listen',listenScore>=5?2:1);tone('finish');celebrate();}; return;
+    }
+    listenTarget=vocab[Math.floor(Math.random()*vocab.length)];
+    const choices=[listenTarget]; while(choices.length<3){const c=vocab[Math.floor(Math.random()*vocab.length)];if(!choices.includes(c))choices.push(c)} choices.sort(()=>Math.random()-.5);
+    lessonContent.innerHTML=head('👂','Listen & Choose',`Round ${listenRound+1} of 6`)+`<div class="activity-instruction"><b>Listen.</b> Tap the word you hear.</div>
+      <div class="prompt-card"><div class="prompt-emoji">🔊</div><h3>What do you hear?</h3><button id="playPrompt" class="secondary">Play again</button></div>
+      <div class="choice-grid">${choices.map(c=>`<button class="choice" data-answer="${safeText(c.word)}"><span style="font-size:2.6rem;display:block;margin-bottom:6px">${c.icon}</span>${c.word}</button>`).join('')}</div>`;
+    $('#playPrompt').onclick=()=>speak(listenTarget.voice);
+    document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{
+      document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=true);
+      if(b.dataset.answer===listenTarget.word){b.classList.add('correct');listenScore++;tone('good');toast('Yes! Great listening.');}
+      else{b.classList.add('wrong');tone('bad');document.querySelectorAll('[data-answer]').forEach(x=>{if(x.dataset.answer===listenTarget.word)x.classList.add('correct')});}
+      listenRound++; setTimeout(nextListen,950);
+    });
+    setTimeout(()=>speak(listenTarget.voice),350);
+  }
+
+  function renderFeelings(){
+    lessonContent.innerHTML=head('😊','How are you?','Listen and choose a friendly reply.')+`<div class="activity-instruction"><b>Read the greeting.</b> Choose the best answer.</div>
+      <div class="dialogue"><div class="bubble-row"><div class="avatar">👦</div><div class="bubble">Hello! How are you? <button class="listen-mini" id="feelListen">🔊</button></div></div><div id="feelReply"></div></div>
+      <div class="answer-stack">
+        <button class="answer-btn" data-feel="bad">A. Goodbye.</button>
+        <button class="answer-btn" data-feel="good">B. I'm fine, thank you.</button>
+        <button class="answer-btn" data-feel="bad">C. My name's Anna.</button>
+      </div><div class="controls"><button id="feelDone" class="primary success-btn hidden">Finish activity ✓</button></div>`;
+    $('#feelListen').onclick=()=>speak('Hello. How are you?');
+    document.querySelectorAll('[data-feel]').forEach(b=>b.onclick=()=>{
+      if(b.dataset.feel==='good'){
+        tone('good'); b.style.borderColor='#3fbd7f'; b.style.background='#e9fbf2';
+        $('#feelReply').innerHTML=`<div class="bubble-row right"><div class="bubble">I'm fine, thank you. 😊</div><div class="avatar">👧</div></div>`;
+        speak("I'm fine, thank you."); $('#feelDone').classList.remove('hidden');
+      }else{tone('bad');b.classList.add('wrong');toast('Try a friendly answer.');}
+    });
+    $('#feelDone').onclick=()=>{complete('feelings',1);celebrate();};
+  }
+
+  function renderNames(){
+    lessonContent.innerHTML=head('🏷️',"What's your name?",'Type your name and practise the dialogue.')+`<div class="activity-instruction"><b>Complete the dialogue.</b> Then listen and say both lines.</div>
+      <div class="dialogue"><div class="bubble-row"><div class="avatar">🧑‍🏫</div><div class="bubble">Hello! What's your name?</div></div>
+      <div class="bubble-row right"><div class="bubble" id="nameBubble">My name's ${safeText(state.name)}.</div><div class="avatar">🧒</div></div></div>
+      <div class="student-line"><input id="practiceName" value="${safeText(state.name)}" maxlength="60" aria-label="Your name"><button id="updateName" class="secondary">Update</button></div>
+      <div class="controls"><button id="hearDialogue" class="secondary">🔊 Hear dialogue</button><button id="nameDone" class="primary success-btn">I said the dialogue ✓</button></div>`;
+    $('#updateName').onclick=()=>{const n=$('#practiceName').value.trim();if(n){state.name=n;save();$('#nameBubble').textContent=`My name's ${n}.`;$('#topName').textContent=n;toast('Name updated.');}};
+    $('#hearDialogue').onclick=()=>speak(`Hello. What's your name? My name is ${state.name}.`,.82);
+    $('#nameDone').onclick=()=>{complete('names',1);tone('good');celebrate();};
+  }
+
+  function renderWheel(){
+    const labels=['Hello','Goodbye','Sing','Sit down','Stand up','Thank you'];
+    lessonContent.innerHTML=head('🎡','Action Wheel','Spin, listen, and do the action!')+`<div class="activity-instruction"><b>Spin the wheel.</b> Say or do the action that appears.</div>
+      <div class="wheel-area"><div class="wheel-wrap"><div class="pointer">▼</div><div id="wheel" class="wheel">${labels.map((x,i)=>`<span class="wheel-label" style="transform:rotate(${i*60+30}deg) translateY(-50%)">${x}</span>`).join('')}<div class="wheel-center">⭐</div></div></div>
+      <div class="spin-panel"><div id="actionShow" class="action-show">🎡</div><h3 id="actionWord">Ready?</h3><p id="actionHint">Spin three times to finish.</p><button id="spinBtn" class="primary">SPIN!</button><div id="spinCount" style="margin-top:12px;font-weight:1000">0 / 3 spins</div></div></div>`;
+    let count=0;
+    $('#spinBtn').onclick=()=>{
+      if(count>=3)return; const i=Math.floor(Math.random()*vocab.length); wheelRotation += 1080 + (360 - i*60 - 30); $('#wheel').style.transform=`rotate(${wheelRotation}deg)`; $('#spinBtn').disabled=true; tone();
+      setTimeout(()=>{const v=vocab[i];$('#actionShow').textContent=v.icon;$('#actionWord').textContent=v.word+'!';$('#actionHint').textContent='Say it and do it!';speak(v.voice);count++;$('#spinCount').textContent=count+' / 3 spins';$('#spinBtn').disabled=false;
+        if(count>=3){$('#spinBtn').textContent='Finish activity ✓';$('#spinBtn').onclick=()=>{complete('wheel',1);tone('finish');celebrate();};}
+      },2450);
+    };
+  }
+
+  function renderPhonics(letter='A'){
+    const data={A:{lower:'a',word:'apple',icon:'🍎'},B:{lower:'b',word:'bag',icon:'🎒'},C:{lower:'c',word:'cake',icon:'🍰'}}[letter];
+    lessonContent.innerHTML=head('🔤','Phonics A–C','Listen, point, repeat, and trace.')+`<div class="letter-tabs">${['A','B','C'].map(x=>`<button class="letter-tab ${x===letter?'active':''}" data-letter="${x}">${x}${x.toLowerCase()}</button>`).join('')}</div>
+      <div class="letter-stage"><div class="giant-letter">${letter}${data.lower}</div><div class="phonics-pic">${data.icon}</div><h3 style="font-size:1.6rem;margin:6px">${letter} is for ${data.word}</h3><button id="phonicsListen" class="secondary">🔊 Listen</button>
+      <div class="trace-box"><div class="trace-letter">${letter}${data.lower}</div><canvas id="traceCanvas" width="560" height="150" aria-label="Trace the letter"></canvas></div><button id="clearTrace" class="secondary" style="margin-top:10px">Clear tracing</button></div>
+      <div class="sort-grid">
+        <div class="sort-item"><div class="emoji">🍎</div><b>apple</b><select data-sort="A"><option value="">Choose letter</option><option>A</option><option>B</option><option>C</option></select></div>
+        <div class="sort-item"><div class="emoji">🎒</div><b>bag</b><select data-sort="B"><option value="">Choose letter</option><option>A</option><option>B</option><option>C</option></select></div>
+        <div class="sort-item"><div class="emoji">🍰</div><b>cake</b><select data-sort="C"><option value="">Choose letter</option><option>A</option><option>B</option><option>C</option></select></div>
+      </div><div class="controls"><button id="checkPhonics" class="primary">Check answers</button></div>`;
+    document.querySelectorAll('[data-letter]').forEach(b=>b.onclick=()=>renderPhonics(b.dataset.letter));
+    $('#phonicsListen').onclick=()=>speak(`${letter}. ${data.lower}. ${data.word}. ${letter} is for ${data.word}.`,.72);
+    setupTrace(); $('#clearTrace').onclick=clearTrace;
+    $('#checkPhonics').onclick=()=>{
+      const sels=[...document.querySelectorAll('[data-sort]')]; const ok=sels.every(s=>s.value===s.dataset.sort);
+      sels.forEach(s=>{s.parentElement.style.borderColor=s.value===s.dataset.sort?'#3fbd7f':'#ff6b6b'});
+      if(ok){tone('good');complete('phonics',2);celebrate();toast('A apple, B bag, C cake!');}else{tone('bad');toast('Look again: A apple, B bag, C cake.');}
+    };
+  }
+  function setupTrace(){
+    const c=$('#traceCanvas'); if(!c)return; traceCtx=c.getContext('2d'); traceCtx.lineWidth=8; traceCtx.lineCap='round'; traceCtx.strokeStyle='#138b96';
+    const pos=e=>{const r=c.getBoundingClientRect();const p=e.touches?e.touches[0]:e;return[(p.clientX-r.left)*(c.width/r.width),(p.clientY-r.top)*(c.height/r.height)]};
+    const start=e=>{e.preventDefault();tracing=true;const [x,y]=pos(e);traceCtx.beginPath();traceCtx.moveTo(x,y)};
+    const move=e=>{if(!tracing)return;e.preventDefault();const [x,y]=pos(e);traceCtx.lineTo(x,y);traceCtx.stroke()};
+    const end=()=>tracing=false;
+    c.onmousedown=start;c.onmousemove=move;window.addEventListener('mouseup',end,{once:true});c.ontouchstart=start;c.ontouchmove=move;c.ontouchend=end;
+  }
+  function clearTrace(){const c=$('#traceCanvas');if(c&&traceCtx)traceCtx.clearRect(0,0,c.width,c.height);tone();}
+
+  function renderFriendly(){
+    lessonContent.innerHTML=head('🤝','Be Friendly','Choose kind words and actions.')+`<div class="activity-instruction"><b>Mini story:</b> Mia meets a new classmate. What should she say?</div>
+      <div class="story-scene"><div class="story-sun">☀️</div><div class="story-cloud">☁️</div><div class="story-people"><div class="story-person"><div class="person">👧🏽</div><b>Mia</b></div><div class="story-person"><div class="person">🧒🏻</div><b>New friend</b></div></div></div>
+      <div class="answer-stack">
+        <button class="answer-btn" data-kind="good">👋 “Hello! What's your name?”</button>
+        <button class="answer-btn" data-kind="bad">😠 “Go away!”</button>
+        <button class="answer-btn" data-kind="bad">🙈 Say nothing and turn away.</button>
+      </div><div id="kindResult" class="hidden"><h3 style="text-align:center;margin-top:20px">How does the new friend feel?</h3><div class="feeling-row"><button class="feeling" data-emotion="good">😊</button><button class="feeling" data-emotion="bad">😐</button><button class="feeling" data-emotion="bad">☹️</button></div></div>`;
+    document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{
+      if(b.dataset.kind==='good'){tone('good');b.style.borderColor='#3fbd7f';b.style.background='#e9fbf2';speak("Hello. What's your name?");$('#kindResult').classList.remove('hidden');}
+      else{tone('bad');b.classList.add('wrong');toast('Choose friendly words.');}
+    });
+    document.querySelectorAll('[data-emotion]').forEach(b=>b.onclick=()=>{
+      if(b.dataset.emotion==='good'){b.classList.add('selected');tone('finish');complete('friendly',1);celebrate();toast('Friendly words help people feel happy!');}
+      else{tone('bad');toast('Friendly words make the new friend happy.');}
+    });
+  }
+
+  const quizBank = [
+    {q:'Which word means “xin chào”?',img:'👋',a:['Hello','Goodbye','Cake'],correct:0},
+    {q:'Listen and choose.',img:'🔊',a:['Stand up','Thank you','Sing'],correct:1,say:'Thank you'},
+    {q:'What should you say when you leave?',img:'🚪',a:['Hello','Goodbye','Sit down'],correct:1},
+    {q:'Choose the correct action.',img:'🪑',a:['Sit down','Stand up','Sing'],correct:0},
+    {q:'“Hello! How are you?”',img:'😊',a:["I'm fine, thank you.","My name's Ben.",'Goodbye.'],correct:0},
+    {q:"Complete: What's your ____?",img:'🏷️',a:['cake','name','bag'],correct:1},
+    {q:'A is for…',img:'🍎',a:['apple','bag','cake'],correct:0},
+    {q:'B is for…',img:'🎒',a:['apple','bag','cake'],correct:1},
+    {q:'C is for…',img:'🍰',a:['apple','bag','cake'],correct:2},
+    {q:'Which is friendly?',img:'🤝',a:['Go away!','Hello!','Be quiet!'],correct:1}
+  ];
+  function startQuiz(){quizIndex=0;quizScore=0;quizAnswers=[];renderQuizQuestion();}
+  function renderQuizQuestion(){
+    if(quizIndex>=quizBank.length){finishQuiz();return} const x=quizBank[quizIndex];
+    lessonContent.innerHTML=head('🏆','Final Quiz','Show what you know!')+`<div class="quiz-top"><span class="quiz-counter">${quizIndex+1}/10</span><div class="quiz-bar"><div style="width:${(quizIndex+1)*10}%"></div></div></div>
+      <div class="quiz-image">${x.img}</div><h3 class="quiz-question">${x.q}</h3><div class="answer-stack">${x.a.map((a,i)=>`<button class="answer-btn" data-qanswer="${i}">${String.fromCharCode(65+i)}. ${a}</button>`).join('')}</div>${x.say?'<div class="controls" style="justify-content:center"><button id="quizListen" class="secondary">🔊 Play again</button></div>':''}`;
+    if(x.say){$('#quizListen').onclick=()=>speak(x.say);setTimeout(()=>speak(x.say),300)}
+    document.querySelectorAll('[data-qanswer]').forEach(b=>b.onclick=()=>{
+      document.querySelectorAll('[data-qanswer]').forEach(y=>y.disabled=true);const i=+b.dataset.qanswer,ok=i===x.correct;quizAnswers.push({q:x.q,answer:x.a[i],correct:ok});
+      if(ok){quizScore++;b.style.borderColor='#3fbd7f';b.style.background='#e9fbf2';tone('good');}
+      else{b.style.borderColor='#ff6b6b';b.style.background='#fff0f0';document.querySelector(`[data-qanswer="${x.correct}"]`).style.borderColor='#3fbd7f';tone('bad');}
+      quizIndex++;setTimeout(renderQuizQuestion,850);
+    });
+  }
+  function finishQuiz(){
+    state.attempts=(state.attempts||0)+1;state.lastScore=quizScore;state.lastFinished=new Date().toISOString();state.best=Math.max(state.best==null?0:state.best,quizScore);state.completed.quiz=true;
+    const bonus=quizScore>=9?3:quizScore>=7?2:1;if(!state.quizRewarded){state.stars+=bonus;state.quizRewarded=true}save();updateHeader();updateDashboard();
+    const pct=quizScore*10, mood=quizScore>=9?'🌟':quizScore>=7?'🏆':'💪';
+    lessonContent.innerHTML=head('🏆','Lesson Complete!','Your result report is ready.')+`<div class="result-card"><div class="result-badge">${mood}</div><h2>Well done, ${safeText(firstName())}!</h2><div class="score-big">Final score: ${quizScore}/10 (${pct}%)</div>
+      <div class="report"><div class="report-grid"><div><b>Learner:</b> ${safeText(state.name)}</div><div><b>Unit:</b> Unit 1 — Hello!</div><div><b>Completed:</b> ${new Date().toLocaleString()}</div><div><b>Stars:</b> ${state.stars}</div><div><b>Best quiz:</b> ${state.best}/10</div><div><b>Attempts:</b> ${state.attempts}</div></div></div>
+      <div class="email-note"><b>Teacher report:</b> Because this is a fully offline, self-contained file, a browser cannot secretly send email by itself. The button below safely opens the device's email app with the report addressed to <b>${TEACHER_EMAIL}</b>. The learner or parent then taps <b>Send</b>.</div>
+      <div class="controls" style="justify-content:center"><button id="emailReport" class="primary">✉️ Email results to teacher</button><button id="copyReport" class="secondary">Copy report</button><button id="downloadReport" class="secondary">Download .txt</button><button id="quizAgain" class="secondary">Try quiz again</button></div></div>`;
+    tone('finish');celebrate();
+    $('#emailReport').onclick=sendReport;$('#copyReport').onclick=copyReport;$('#downloadReport').onclick=downloadReport;$('#quizAgain').onclick=startQuiz;
+  }
+  function reportText(){
+    const completed=lessons.filter(l=>state.completed[l.id]).map(l=>l.title).join(', ');
+    return `UNIT 1: HELLO! — LEARNER RESULT\n\nLearner: ${state.name}\nTeacher: ${TEACHER_EMAIL}\nDate: ${new Date(state.lastFinished||Date.now()).toLocaleString()}\nFinal quiz: ${state.lastScore}/10\nBest quiz: ${state.best}/10\nAttempts: ${state.attempts}\nStars: ${state.stars}\nCompleted activities: ${completed}\n\nThis report was generated by the self-contained Unit 1 interactive lesson.`;
+  }
+  function sendReport(){
+    const subject=encodeURIComponent(`Unit 1 Hello! result — ${state.name}`), body=encodeURIComponent(reportText());
+    window.location.href=`mailto:${TEACHER_EMAIL}?subject=${subject}&body=${body}`;
+  }
+  async function copyReport(){
+    try{await navigator.clipboard.writeText(reportText());toast('Report copied!');tone('good');}
+    catch(e){const ta=document.createElement('textarea');ta.value=reportText();document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Report copied!');}
+  }
+  function downloadReport(){const blob=new Blob([reportText()],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Unit1_Hello_${state.name.replace(/[^a-z0-9]+/gi,'_')}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+
+  function start(){
+    const name=$('#fullName').value.trim().replace(/\s+/g,' ');
+    if(name.length<3 || name.split(' ').length<2){$('#nameError').textContent='Please write your full name (at least two words).';tone('bad');return}
+    state.name=name; save(); gate.classList.add('hidden'); app.classList.remove('hidden'); $('#topName').textContent=name; $('#welcomeText').textContent=`Hello, ${firstName()}! 👋`; updateHeader(); updateDashboard(); speak(`Hello, ${firstName()}. Welcome to Unit One.`); tone('good');
+  }
+  $('#startBtn').onclick=start; $('#fullName').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
+  $('#backBtn').onclick=showDashboard;
+  $('#soundToggle').onclick=()=>{soundOn=!soundOn;$('#soundToggle').textContent=soundOn?'🔊':'🔇';$('#soundToggle').ariaLabel=soundOn?'Turn sound off':'Turn sound on';if(!soundOn&&'speechSynthesis'in window)speechSynthesis.cancel();toast(soundOn?'Sound on':'Sound off');};
+
+  load();
+  if(state.name){$('#fullName').value=state.name;}
+})();
+</script>
+</body>
+</html>
